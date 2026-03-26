@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 
 const ProductsDetails = () => {
     const { _id: productID } = useLoaderData()
-    const [bids,setBids]=useState([])
+    const [bids, setBids] = useState([])
     useEffect(() => {
         fetch(`http://localhost:3000/products/bids/${productID}`)
             .then(res => res.json())
@@ -56,6 +56,11 @@ const ProductsDetails = () => {
                         showConfirmButton: false,
                         timer: 1500
                     });
+                    // add new bid in state mean add instant in ui of web
+                    newBid._id = data.insertedId
+                    const newBids = [...bids,newBid].sort(
+                    (a, b) => a.bid_price - b.bid_price)
+                    setBids(newBids)
                 }
             })
     }
@@ -97,6 +102,58 @@ const ProductsDetails = () => {
             {/* bids for product */}
             <div>
                 <h1 className='text-5xl'>Bids for this product: <span className='text-primary'>{bids.length}</span></h1>
+
+                <div className="overflow-x-auto">
+                    <table className="table">
+                        {/* head */}
+                        <thead>
+                            <tr>
+                                <th>SL No. </th>
+                                <th>Buyer Name </th>
+                                <th>Buyer Email</th>
+                                <th>Bid price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {/* row 1 */}
+                            {
+                                bids.map((bid,index)=><tr>
+                                <th> {index+1}</th>
+                                <td>
+                                    <div className="flex items-center gap-3">
+                                        <div className="avatar">
+                                            <div className="mask mask-squircle h-12 w-12">
+                                                <img
+                                                    src="https://img.daisyui.com/images/profile/demo/2@94.webp"
+                                                    alt="Avatar Tailwind CSS Component" />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="font-bold">{bid.buyer_name}</div>
+                                            <div className="text-sm opacity-50">{bid.buyer_email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {bid.buyer_email}
+                                    <br />
+                                    <span className="badge badge-ghost badge-sm">Desktop Support Technician</span>
+                                </td>
+                                <td>{bid.bid_price}</td>
+                                <th>
+                                    <button className="btn btn-ghost btn-xs">{bid.status}</button>
+                                </th>
+                            </tr>)
+                            }
+                          
+                           
+                           
+                          
+                        </tbody>
+                       
+                    </table>
+                </div>
 
             </div>
         </div>
