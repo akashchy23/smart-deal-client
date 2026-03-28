@@ -5,16 +5,23 @@ import Swal from 'sweetalert2';
 
 const ProductsDetails = () => {
     const { _id: productID } = useLoaderData()
+    const { user,loading } = use(Authcontext)
     const [bids, setBids] = useState([])
     useEffect(() => {
-        fetch(`http://localhost:3000/products/bids/${productID}`)
+        // if(!user?.accessToken) return
+        if(!user) return;
+        fetch(`http://localhost:3000/products/bids/${productID}`,{
+           headers:{
+                    authorization: `Bearer ${user?.accessToken}`
+                }
+        })
             .then(res => res.json())
             .then(data => {
                 console.log('bids for this product', data)
                 setBids(data)
             })
-    }, [productID])
-    const { user } = use(Authcontext)
+    }, [productID,user])
+    
     const bidmodalRef = useRef(null)
     // console.log(product)
     const handleopenBidModal = () => {
@@ -118,7 +125,8 @@ const ProductsDetails = () => {
                         <tbody>
                             {/* row 1 */}
                             {
-                                bids.map((bid,index)=><tr>
+                           loading? <p>Loading........</p>
+                            :  bids.map((bid,index)=><tr>
                                 <th> {index+1}</th>
                                 <td>
                                     <div className="flex items-center gap-3">
